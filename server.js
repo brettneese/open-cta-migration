@@ -32,11 +32,11 @@ var fs = require('fs'),
   es = require('event-stream');
 
 request({url: 'https://opencta.cloudant.com/trains/_all_docs'})
-  .pipe(JSONStream.parse(['rows', true, 'doc']))
-
-stream.on('data', function(data) {
-    console.log(data)
-});
+  .pipe(JSONStream.parse(['rows', true, 'doc'])
+  .pipe(es.mapSync(function (data) {
+    console.error(data)
+    return data
+  }))
 
 
 // javascript is so dumb
