@@ -55,7 +55,7 @@ var save = function(result){
           _.each(result,function(element, index, list) {
             var trainsInRoute = element.train;
             var params = {
-              TableName: 'ayy' || process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
+              TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
             };
 
             //parsing
