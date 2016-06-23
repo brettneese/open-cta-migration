@@ -49,7 +49,7 @@ var isNumberic = function(num){
 
 //the stuff to do every 3 seconds
 var save = function(result){
-          console.log(result)
+        //  console.log(result)
          // var meta = {errCd: result.errCd[0], errNm: result.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
 
           _.each(result,function(element, index, list) {
