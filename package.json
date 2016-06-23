@@ -28,6 +28,7 @@
     "express": "~3.4.4",
     "moment-timezone": "^0.5.3",
     "ngeohash": "^0.6.0",
+    "omit-empty": "^0.4.1",
     "request": "^2.64.0",
     "underscore": "^1.8.3",
     "xml2js": "^0.4.12"

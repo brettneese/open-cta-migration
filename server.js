@@ -10,7 +10,9 @@ var request = require('request'),
     geohash = require('ngeohash'),
     fs = require('fs'),
     JSONStream = require('JSONStream'),
-    es = require('event-stream')
+    es = require('event-stream'),
+    omitEmpty = require('omit-empty');
+
 
 
 var d = new Date(),
@@ -21,12 +23,9 @@ var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 1337;
 
 // Configuring AWS
 AWS.config.update({
-    region: "us-east-1",
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    region: "us-east-1"
 });
 
-var docClient = new AWS.DynamoDB.DocumentClient();
 
 var fs = require('fs'),
   JSONStream = require('JSONStream'),
@@ -38,7 +37,7 @@ request({url: 'https://opencta.cloudant.com/trains/_all_docs\?include_docs\=true
     save(data.data)
     // console.error(data)
     return data
-  }))
+}))
 
 
 // javascript is so dumb
@@ -50,41 +49,31 @@ var isNumberic = function(num){
 //the stuff to do every 3 seconds
 var save = function(result){
          // var meta = {errCd: result.errCd[0], errNm: result.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
-
           _.each(result,function(element, index, list) {
-            console.log("ayyyyy")
-            console.log(element)
-            var trainsInRoute = element.train;
-            var params = {
-              TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
-            };
+          var docClient = new AWS.DynamoDB.DocumentClient();
 
             //parsing
-            _.each(trainsInRoute, function (train, property_index,list){
-              params.Item = _.mapObject(train, function(val, key) {
-                if(isNumberic(val[0])){
-                  return +val[0];
-                }
-                return val[0];
+            _.each(element, function (train, property_index,list){
+                var params = {
+                    TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS,
+                    Item: { 
+
+                    }
+                };
+                params.Item = train
+                params.Item.routeName = index;
+                params.Item.arrT = moment.tz(params.Item.arrT, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
+                params.Item.prdt = moment.tz(params.Item.prdt, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
+                params.Item.geohash = geohash.encode(params.Item.lat, params.Item.lon, 9);
+                docClient.put(omitEmpty(params), function(err, data) {
+                    console.log(params)
+                    if (err) console.error(JSON.stringify(err, null, 2));
+                });
             });
-
-            //mapping some things
-            params.Item.routeName = element.name[0];
-            params.Item.arrT = moment.tz(params.Item.arrT, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
-            params.Item.prdt = moment.tz(params.Item.prdt, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
-            params.Item.geohash = geohash.encode(params.Item.lat, params.Item.lon, 9);
-            params.Item.meta = _.pick(meta, _.identity);
-            params.Item =  _.pick(params.Item, _.identity);
-
-            console.log("new trains....")
-            console.log(params)
-
-            // //pushing to DynamoDB
-            // docClient.put(params, function(err, data) {
-            //     if (err) console.error(JSON.stringify(err, null, 2));
-            // });
-          });
         });
+
+
+
     };
 
 app.get('/', function (req, res) {
