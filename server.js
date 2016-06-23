@@ -75,11 +75,13 @@ var save = function(result){
             params.Item.meta = _.pick(meta, _.identity);
             params.Item =  _.pick(params.Item, _.identity);
 
+            console.log("new trains....")
             console.log(params)
-            // //pushing to DynamoDB
-            // docClient.put(params, function(err, data) {
-            //     if (err) console.error(JSON.stringify(err, null, 2));
-            // });
+
+            //pushing to DynamoDB
+            docClient.put(params, function(err, data) {
+                if (err) console.error(JSON.stringify(err, null, 2));
+            });
           });
         });
     };
