@@ -35,6 +35,7 @@ var fs = require('fs'),
 request({url: 'https://opencta.cloudant.com/trains/_all_docs\?include_docs\=true'})
   .pipe(JSONStream.parse('rows.*.doc'))
   .pipe(es.mapSync(function (data) {
+    save(data.data)
     console.error(data)
     return data
   }))
