@@ -50,39 +50,39 @@ var isNumberic = function(num){
 //the stuff to do every 3 seconds
 var save = function(result){
           
-          console.log(result);
-        //   var meta = {errCd: result.ctatt.errCd[0], errNm: result.ctatt.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.ctatt.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
-        //   var predictionResults = result.ctatt.route;
+          var meta = {errCd: result.ctatt.errCd[0], errNm: result.ctatt.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.ctatt.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
+          var predictionResults = result.ctatt.route;
 
-        //   _.each(predictionResults,function(element, index, list) {
-        //     var trainsInRoute = element.train;
-        //     var params = {
-        //       TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
-        //     };
+          _.each(predictionResults,function(element, index, list) {
+            var trainsInRoute = element.train;
+            var params = {
+              TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
+            };
 
-        //     //parsing
-        //     _.each(trainsInRoute, function (train, property_index,list){
-        //       params.Item = _.mapObject(train, function(val, key) {
-        //         if(isNumberic(val[0])){
-        //           return +val[0];
-        //         }
-        //         return val[0];
-        //     });
+            //parsing
+            _.each(trainsInRoute, function (train, property_index,list){
+              params.Item = _.mapObject(train, function(val, key) {
+                if(isNumberic(val[0])){
+                  return +val[0];
+                }
+                return val[0];
+            });
 
-        //     //mapping some things
-        //     params.Item.routeName = element.name[0];
-        //     params.Item.arrT = moment.tz(params.Item.arrT, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
-        //     params.Item.prdt = moment.tz(params.Item.prdt, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
-        //     params.Item.geohash = geohash.encode(params.Item.lat, params.Item.lon, 9);
-        //     params.Item.meta = _.pick(meta, _.identity);
-        //     params.Item =  _.pick(params.Item, _.identity);
+            //mapping some things
+            params.Item.routeName = element.name[0];
+            params.Item.arrT = moment.tz(params.Item.arrT, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
+            params.Item.prdt = moment.tz(params.Item.prdt, "YYYYMMDD HH:mm:ss", "America/Chicago").unix();
+            params.Item.geohash = geohash.encode(params.Item.lat, params.Item.lon, 9);
+            params.Item.meta = _.pick(meta, _.identity);
+            params.Item =  _.pick(params.Item, _.identity);
 
-        //     //pushing to DynamoDB
-        //     docClient.put(params, function(err, data) {
-        //         if (err) console.error(JSON.stringify(err, null, 2));
-        //     });
-        //   });
-        // });
+            console.log(params)
+            // //pushing to DynamoDB
+            // docClient.put(params, function(err, data) {
+            //     if (err) console.error(JSON.stringify(err, null, 2));
+            // });
+          });
+        });
     };
 
 app.get('/', function (req, res) {
