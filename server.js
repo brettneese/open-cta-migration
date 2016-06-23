@@ -33,7 +33,7 @@ var fs = require('fs'),
   es = require('event-stream');
 
 request({url: 'https://opencta.cloudant.com/trains/_all_docs\?include_docs\=true'})
-  .pipe(JSONStream.parse('rows.*'))
+  .pipe(JSONStream.parse('rows.*.doc'))
   .pipe(es.mapSync(function (data) {
     console.error(data)
     return data
