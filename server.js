@@ -7,7 +7,9 @@ var request = require('request'),
     AWS = require("aws-sdk"),
     moment = require("moment-timezone"),
     parseString = require('xml2js').parseString,
-    geohash = require('ngeohash');
+    geohash = require('ngeohash'),
+    fs = require('fs'),
+    JSONStream = require('JSONStream');
 
 
 var d = new Date(),
@@ -25,25 +27,27 @@ AWS.config.update({
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
-// Doing stuff every 3 seconds
-setInterval(function() {
-        var cta_url = "http://lapi.transitchicago.com/api/1.0//ttpositions.aspx?key=" + process.env.CTA_TOKEN + "&rt=brn,red,Blue,G,Org,P,Pink,Y";
-        request(cta_url, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    console.log('request successful!'); // Show the HTML for the Google homepage.
-                    save(body);
-                }
-        });
-}, 3000);
+var getStream = function () {
+        var jsonData = 'myData.json',
+            stream = fs.createReadStream(jsonData, {encoding: 'utf8'}),
+            parser = JSONStream.parse(['rows', true, 'doc']);
+        
+        return stream.pipe(parser);
+}
+
+getStream().pipe(save).on('error', function (err){
+    console.log(error)
+});
 
 // javascript is so dumb
 var isNumberic = function(num){
     return !isNaN(num);
 };
 
+
 //the stuff to do every 3 seconds
-var save = function(data){
-        parseString(data, {mergeAttrs: true}, function (err, result) {
+var save = function(result){
+          
           var meta = {errCd: result.ctatt.errCd[0], errNm: result.ctatt.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.ctatt.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
           var predictionResults = result.ctatt.route;
 
@@ -76,8 +80,7 @@ var save = function(data){
             });
           });
         });
-      });
-  };
+    };
 
 app.get('/', function (req, res) {
    res.end("It's alive!");
