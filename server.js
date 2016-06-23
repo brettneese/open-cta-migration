@@ -50,10 +50,9 @@ var isNumberic = function(num){
 //the stuff to do every 3 seconds
 var save = function(result){
           
-          var meta = {errCd: result.ctatt.errCd[0], errNm: result.ctatt.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.ctatt.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
-          var predictionResults = result.ctatt.route;
+          var meta = {errCd: result.errCd[0], errNm: result.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
 
-          _.each(predictionResults,function(element, index, list) {
+          _.each(result,function(element, index, list) {
             var trainsInRoute = element.train;
             var params = {
               TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
