@@ -53,10 +53,9 @@ var save = function(result){
          // var meta = {errCd: result.errCd[0], errNm: result.errNm[0], insertTimestamp: Date.now(), responseTimestamp: moment.tz(result.tmst[0], "YYYYMMDD HH:mm:ss", "America/Chicago").unix()};
 
           _.each(result,function(element, index, list) {
-              console.log(element)
             var trainsInRoute = element.train;
             var params = {
-              TableName: process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
+              TableName: 'ayy' || process.env.AWS_DYNAMODB_TABLE_NAME_TRAINS
             };
 
             //parsing
