@@ -31,17 +31,13 @@ var fs = require('fs'),
   JSONStream = require('JSONStream'),
   es = require('event-stream');
 
-var getStream = function () {
-    var jsonData = '../db.json',
-        stream = fs.createReadStream(jsonData, {encoding: 'utf8'}),
-        parser = JSONStream.parse('*');
-        return stream.pipe(parser);
-};
+request({url: 'https://opencta.cloudant.com/trains/_all_docs'})
+  .pipe(JSONStream.parse(['rows', true, 'doc']))
 
- getStream()
-  .pipe(es.mapSync(function (data) {
-    console.log(data);
-  }));
+stream.on('data', function(data) {
+    console.log(data)
+});
+
 
 // javascript is so dumb
 var isNumberic = function(num){
