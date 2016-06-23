@@ -27,17 +27,21 @@ AWS.config.update({
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
-var getStream = function () {
-        var jsonData = '../data.json',
-            stream = fs.createReadStream(jsonData, {encoding: 'utf8'}),
-            parser = JSONStream.parse(['rows', true, 'doc']);
-        
-        return stream.pipe(parser);
-}
+var fs = require('fs'),
+  JSONStream = require('JSONStream'),
+  es = require('event-stream');
 
-getStream().pipe(save).on('error', function (err){
-    console.log(error)
-});
+var getStream = function () {
+    var jsonData = 'data.json',
+        stream = fs.createReadStream(jsonData, {encoding: 'utf8'}),
+        parser = JSONStream.parse('*');
+        return stream.pipe(parser);
+};
+
+ getStream()
+  .pipe(es.mapSync(function (data) {
+    console.log(data);
+  }));
 
 // javascript is so dumb
 var isNumberic = function(num){
