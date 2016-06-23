@@ -9,7 +9,8 @@ var request = require('request'),
     parseString = require('xml2js').parseString,
     geohash = require('ngeohash'),
     fs = require('fs'),
-    JSONStream = require('JSONStream');
+    JSONStream = require('JSONStream'),
+    es = require('event-stream')
 
 
 var d = new Date(),
@@ -31,8 +32,8 @@ var fs = require('fs'),
   JSONStream = require('JSONStream'),
   es = require('event-stream');
 
-request({url: 'https://opencta.cloudant.com/trains/_all_docs'})
-  .pipe(JSONStream.parse(['rows', true, 'doc'])
+request({url: 'http://isaacs.couchone.com/registry/_all_docs'})
+  .pipe(JSONStream.parse('rows.*'))
   .pipe(es.mapSync(function (data) {
     console.error(data)
     return data
