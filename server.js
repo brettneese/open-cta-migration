@@ -28,7 +28,7 @@ AWS.config.update({
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 var getStream = function () {
-        var jsonData = 'myData.json',
+        var jsonData = '../data.json',
             stream = fs.createReadStream(jsonData, {encoding: 'utf8'}),
             parser = JSONStream.parse(['rows', true, 'doc']);
         
